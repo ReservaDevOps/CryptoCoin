@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      CryptoCoin
     </ion-title>
   </ion-toolbar>
 </ion-header>
@@ -9,12 +9,39 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">CryptoCoin</ion-title>
     </ion-toolbar>
   </ion-header>
 
   <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Gerenciador de Chaves NFC</ion-card-title>
+        <ion-card-subtitle>Proteja suas chaves com segurança</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Frase de Recuperação</ion-label>
+          <ion-textarea [(ngModel)]="seedPhrase" rows="4"></ion-textarea>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Senha</ion-label>
+          <ion-input [(ngModel)]="password" type="password"></ion-input>
+        </ion-item>
+
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-button (click)="readFromNFC()" expand="block" fill="outline">Ler NFC</ion-button>
+            </ion-col>
+            <ion-col>
+              <ion-button (click)="writeToNFC()" expand="block">Escrever NFC</ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
@@ -19,10 +19,10 @@ import {
   IonCol,
   IonButton,
   AlertController,
-  Platform,
 } from '@ionic/angular/standalone';
-import { Nfc } from 'capacitor-nfc-plugin';
 import * as CryptoJS from 'crypto-js';
+import { Subscription } from 'rxjs';
+import { NfcService } from '../services/nfc.service';
 
 @Component({
   selector: 'app-home',
@@ -50,101 +50,90 @@ import * as CryptoJS from 'crypto-js';
     IonButton,
   ],
 })
-export class HomePage {
+export class HomePage implements OnInit, OnDestroy {
   seedPhrase: string = '';
   password: string = '';
 
-  constructor(private alertController: AlertController, private platform: Platform) {
-    this.addNfcListeners();
+  private subscriptions = new Subscription();
+
+  constructor(
+    private alertController: AlertController,
+    private nfcService: NfcService
+  ) {}
+
+  ngOnInit() {
+    this.subscriptions.add(
+      this.nfcService.tagRead$.subscribe(tag => {
+        if (tag) {
+          this.handleNfcTag(tag);
+        }
+      })
+    );
+
+    this.subscriptions.add(
+      this.nfcService.writeSuccess$.subscribe(() => {
+        this.showAlert('Success', 'Data written to NFC tag successfully!');
+      })
+    );
+
+    this.subscriptions.add(
+      this.nfcService.error$.subscribe(error => {
+        if (error) {
+          this.showAlert('NFC Error', error);
+        }
+      })
+    );
   }
 
-  addNfcListeners() {
-    if (this.platform.is('capacitor')) {
-      Nfc.addListener('nfcStatus', (status) => {
-        if (status.status !== 'enabled') {
-          this.showAlert('Erro', 'NFC não está ativado.');
-        }
-      });
-
-      Nfc.addListener('nfcTagDetected', (tag) => {
-        this.handleNfcTag(tag);
-      });
-
-      Nfc.addListener('readSuccess', (tag) => {
-        this.handleNfcTag(tag);
-      });
-
-      Nfc.addListener('writeSuccess', () => {
-        this.showAlert('Sucesso', 'Dados gravados na tag NFC com sucesso!');
-      });
-
-      Nfc.addListener('writeError', (error) => {
-        console.error('Error writing to NFC', error);
-        this.showAlert('Erro de Gravação', 'Não foi possível gravar na tag NFC. Tente novamente.');
-      });
-
-      Nfc.addListener('nfcError', (error) => {
-        console.error('NFC Error', error);
-        this.showAlert('Erro de NFC', 'Ocorreu um erro de NFC.');
-      });
-    }
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   handleNfcTag(tag: any) {
     if (this.password) {
       try {
-        const ndefMessage = tag.ndefMessage;
-        if (ndefMessage && ndefMessage.length > 0) {
-          const record = ndefMessage[0];
-          const encryptedData = record.payload;
+        const encryptedData = tag.ndefMessage;
+        if (encryptedData) {
           this.decryptAndSetSeed(encryptedData);
         } else {
-          this.showAlert('Tag Vazia', 'A tag NFC lida está vazia.');
+          this.showAlert('Empty Tag', 'The NFC tag is empty.');
         }
       } catch (e) {
         console.error('Read error', e);
-        this.showAlert('Erro de Leitura', 'Não foi possível ler os dados da tag NFC.');
+        this.showAlert('Read Error', 'Could not read data from the NFC tag.');
       }
     } else {
-      this.showAlert('Senha Necessária', 'Por favor, insira a senha para descriptografar os dados da tag.');
+      this.showAlert('Password Required', 'Please enter the password to decrypt the tag data.');
     }
   }
 
   async writeToNFC() {
     if (!this.seedPhrase || !this.password) {
-      this.showAlert('Campos Obrigatórios', 'Por favor, preencha a frase de recuperação e a senha.');
+      this.showAlert('Required Fields', 'Please fill in the recovery phrase and password.');
       return;
     }
 
-    if (this.platform.is('capacitor')) {
-      try {
-        const encryptedData = CryptoJS.AES.encrypt(this.seedPhrase, this.password).toString();
-        await Nfc.write({ text: encryptedData });
-      } catch (error) {
-        console.error('Error writing to NFC', error);
-        this.showAlert('Erro de Gravação', 'Não foi possível gravar na tag NFC. Tente novamente.');
-      }
-    } else {
-      this.showAlert('Erro', 'NFC não está disponível nesta plataforma.');
+    try {
+      const encryptedData = CryptoJS.AES.encrypt(this.seedPhrase, this.password).toString();
+      await this.nfcService.write(encryptedData);
+    } catch (error) {
+      console.error('Error writing to NFC', error);
+      this.showAlert('Write Error', 'Could not write to the NFC tag. Please try again.');
     }
   }
 
   async readFromNFC() {
-    if (this.platform.is('capacitor')) {
-      try {
-        await Nfc.read();
-      } catch (error) {
-        console.error('Error reading from NFC', error);
-        this.showAlert('Erro de Leitura', 'Não foi possível ler os dados da tag NFC.');
-      }
-    } else {
-      this.showAlert('Erro', 'NFC não está disponível nesta plataforma.');
+    try {
+      await this.nfcService.read();
+    } catch (error) {
+      console.error('Error reading from NFC', error);
+      this.showAlert('Read Error', 'Could not read from the NFC tag.');
     }
   }
 
   private decryptAndSetSeed(encryptedData: string) {
     if (!this.password) {
-      this.showAlert('Senha Necessária', 'Por favor, insira a senha para descriptografar os dados.');
+      this.showAlert('Password Required', 'Please enter the password to decrypt the data.');
       return;
     }
     try {
@@ -153,13 +142,13 @@ export class HomePage {
 
       if (decryptedText) {
         this.seedPhrase = decryptedText;
-        this.showAlert('Sucesso', 'Dados lidos e descriptografados com sucesso!');
+        this.showAlert('Success', 'Data read and decrypted successfully!');
       } else {
-        throw new Error('Senha incorreta ou dados corrompidos.');
+        throw new Error('Incorrect password or corrupted data.');
       }
     } catch (e) {
       console.error('Decryption error', e);
-      this.showAlert('Erro de Descriptografia', 'Não foi possível descriptografar os dados. Verifique a senha e tente novamente.');
+      this.showAlert('Decryption Error', 'Could not decrypt the data. Check the password and try again.');
     }
   }
 

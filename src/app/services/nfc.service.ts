@@ -1,4 +1,5 @@
 
+/* eslint-disable @angular-eslint/prefer-inject */
 import { Injectable, NgZone } from '@angular/core';
 import { Nfc } from 'capacitor-nfc-plugin';
 import { BehaviorSubject } from 'rxjs';

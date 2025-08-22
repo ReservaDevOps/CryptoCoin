@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import {
   IonHeader,
@@ -20,9 +20,9 @@ import {
   IonButton,
   AlertController,
 } from '@ionic/angular/standalone';
-import * as CryptoJS from 'crypto-js';
 import { Subscription } from 'rxjs';
 import { NfcService } from '../services/nfc.service';
+import { CryptoService } from '../services/crypto.service';
 
 @Component({
   selector: 'app-home',
@@ -55,11 +55,9 @@ export class HomePage implements OnInit, OnDestroy {
   password: string = '';
 
   private subscriptions = new Subscription();
-
-  constructor(
-    private alertController: AlertController,
-    private nfcService: NfcService
-  ) {}
+  private alertController = inject(AlertController);
+  private nfcService = inject(NfcService);
+  private cryptoService = inject(CryptoService);
 
   ngOnInit() {
     this.subscriptions.add(
@@ -114,7 +112,10 @@ export class HomePage implements OnInit, OnDestroy {
     }
 
     try {
-      const encryptedData = CryptoJS.AES.encrypt(this.seedPhrase, this.password).toString();
+      const encryptedData = this.cryptoService.encrypt(
+        this.seedPhrase,
+        this.password,
+      );
       await this.nfcService.write(encryptedData);
     } catch (error) {
       console.error('Error writing to NFC', error);
@@ -137,18 +138,21 @@ export class HomePage implements OnInit, OnDestroy {
       return;
     }
     try {
-      const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, this.password);
-      const decryptedText = decryptedBytes.toString(CryptoJS.enc.Utf8);
-
-      if (decryptedText) {
-        this.seedPhrase = decryptedText;
-        this.showAlert('Success', 'Data read and decrypted successfully!');
-      } else {
-        throw new Error('Incorrect password or corrupted data.');
-      }
+      const decryptedText = this.cryptoService.decrypt(
+        encryptedData,
+        this.password,
+      );
+      this.seedPhrase = decryptedText;
+      this.showAlert(
+        'Success',
+        'Data read and decrypted successfully!'
+      );
     } catch (e) {
       console.error('Decryption error', e);
-      this.showAlert('Decryption Error', 'Could not decrypt the data. Check the password and try again.');
+      this.showAlert(
+        'Decryption Error',
+        'Could not decrypt the data. Check the password and try again.'
+      );
     }
   }
 

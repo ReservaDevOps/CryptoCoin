@@ -25,10 +25,22 @@ export class NfcService {
 
   private addNfcListeners() {
     if (this.platform.is('capacitor')) {
+      // Check initial NFC status
+      Nfc.isEnabled()
+        .then(({ enabled }) => {
+          this.ngZone.run(() => this.errorSubject.next(enabled ? null : 'NFC is not enabled.'));
+        })
+        .catch(err => console.error('Error checking NFC status', err));
+
       Nfc.addListener('nfcStatus', ({ status }) => {
-        if (status !== 'enabled') {
-          this.ngZone.run(() => this.errorSubject.next('NFC is not enabled.'));
-        }
+        const lower = status.toLowerCase();
+        this.ngZone.run(() => {
+          if (lower.includes('disabled') || lower.includes('not')) {
+            this.errorSubject.next('NFC is not enabled.');
+          } else {
+            this.errorSubject.next(null);
+          }
+        });
       });
 
       Nfc.addListener('readSuccess', (tag) => {

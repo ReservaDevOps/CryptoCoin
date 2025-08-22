@@ -22,18 +22,15 @@ export class NfcMockService {
     console.log('NfcMockService initialized');
   }
 
-  async write(data: string): Promise<void> {
+  write(data: string): void {
     console.log('[NFC MOCK] Writing data:', data);
-    return new Promise(resolve => {
-      setTimeout(() => {
-        this.mockTagContent = data;
-        this.ngZone.run(() => {
-          this.writeSuccessSubject.next();
-          alert('[NFC MOCK] Write successful!');
-        });
-        resolve();
-      }, 500);
-    });
+    setTimeout(() => {
+      this.mockTagContent = data;
+      this.ngZone.run(() => {
+        this.writeSuccessSubject.next();
+        alert('[NFC MOCK] Write successful!');
+      });
+    }, 500);
   }
 
   async read(): Promise<void> {
@@ -41,11 +38,11 @@ export class NfcMockService {
     return new Promise(resolve => {
       setTimeout(() => {
         if (this.mockTagContent) {
-          const mockTag: NFCTagInfo = {
+          const mockTag: any = {
             id: 'mock-id',
             type: 'mock-type',
             techTypes: [],
-            ndefMessage: this.mockTagContent,
+            records: [{ payload: this.mockTagContent }],
           };
           this.ngZone.run(() => {
             this.tagReadSubject.next(mockTag);

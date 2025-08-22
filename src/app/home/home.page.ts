@@ -90,9 +90,9 @@ export class HomePage implements OnInit, OnDestroy {
   handleNfcTag(tag: any) {
     if (this.password) {
       try {
-        const encryptedData = tag.ndefMessage;
-        if (encryptedData) {
-          this.decryptAndSetSeed(encryptedData);
+        const payload = tag.records?.[0]?.payload;
+        if (payload) {
+          this.decryptAndSetSeed(payload);
         } else {
           this.showAlert('Empty Tag', 'The NFC tag is empty.');
         }
@@ -105,7 +105,7 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  async writeToNFC() {
+  writeToNFC() {
     if (!this.seedPhrase || !this.password) {
       this.showAlert('Required Fields', 'Please fill in the recovery phrase and password.');
       return;
@@ -116,7 +116,7 @@ export class HomePage implements OnInit, OnDestroy {
         this.seedPhrase,
         this.password,
       );
-      await this.nfcService.write(encryptedData);
+      this.nfcService.write(encryptedData);
     } catch (error) {
       console.error('Error writing to NFC', error);
       this.showAlert('Write Error', 'Could not write to the NFC tag. Please try again.');

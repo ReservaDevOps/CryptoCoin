@@ -63,15 +63,12 @@ export class NfcService {
     }
   }
 
-  async write(data: string): Promise<void> {
+  write(data: string): void {
     if (this.platform.is('capacitor')) {
-      try {
-        await Nfc.write({ text: data });
-      } catch (error) {
+      Nfc.write({ text: data }).catch(error => {
         console.error('Error writing to NFC', error);
-        this.errorSubject.next('Failed to write to NFC tag.');
-        throw error;
-      }
+        this.ngZone.run(() => this.errorSubject.next('Failed to write to NFC tag.'));
+      });
     } else {
       const message = 'NFC is not available on this platform.';
       this.errorSubject.next(message);

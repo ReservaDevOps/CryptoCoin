@@ -7,45 +7,6 @@
   </section>
 
   <section class="main" id="content">
-    <header class="intro">
-      <h2>O que deseja fazer?</h2>
-      <p>Escolha uma das opções abaixo para gerenciar suas chaves</p>
-    </header>
-
-    <div class="action-grid">
-      <button class="action-card action-card--primary" type="button" (click)="readFromNFC()">
-        <div class="action-card__icon">
-          <ion-icon name="wifi"></ion-icon>
-        </div>
-        <h3>Ler Tag</h3>
-        <p>Ler dados de uma tag NFC</p>
-      </button>
-
-      <button class="action-card action-card--success" type="button" (click)="encryptSeed()">
-        <div class="action-card__icon">
-          <ion-icon name="lock-closed"></ion-icon>
-        </div>
-        <h3>Criptografar</h3>
-        <p>Criptografar sua frase de recuperação</p>
-      </button>
-
-      <button class="action-card action-card--warning" type="button" (click)="decryptPayload()">
-        <div class="action-card__icon">
-          <ion-icon name="lock-open"></ion-icon>
-        </div>
-        <h3>Descriptografar</h3>
-        <p>Descriptografar dados protegidos</p>
-      </button>
-
-      <button class="action-card action-card--neutral" type="button" (click)="writeToNFC()">
-        <div class="action-card__icon">
-          <ion-icon name="shield-checkmark"></ion-icon>
-        </div>
-        <h3>Escrever Tag</h3>
-        <p>Gravar dados em uma tag NFC</p>
-      </button>
-    </div>
-
     <section class="tool-card">
       <h3 class="tool-card__title">Gerenciar Dados</h3>
       <p class="tool-card__text">Informe os dados necessários para cada etapa e utilize as ações para trabalhar com sua seed phrase.</p>
@@ -86,21 +47,21 @@
       </header>
       <ul class="security-list">
         <li>
-          <ion-icon name="lock-closed"></ion-icon>
+          <ion-icon name="lock-closed-outline"></ion-icon>
           <div>
             <strong>Criptografia AES-256</strong>
             <span>Suas chaves são protegidas com criptografia militar</span>
           </div>
         </li>
         <li>
-          <ion-icon name="cloud-offline"></ion-icon>
+          <ion-icon name="cloud-offline-outline"></ion-icon>
           <div>
             <strong>100% Offline</strong>
             <span>Nenhum dado é transmitido pela internet</span>
           </div>
         </li>
         <li>
-          <ion-icon name="radio"></ion-icon>
+          <ion-icon name="radio-outline"></ion-icon>
           <div>
             <strong>Tecnologia NFC</strong>
             <span>Armazenamento físico em tags NFC</span>

@@ -116,4 +116,30 @@
       </ul>
     </section>
   </section>
+
+  <ion-modal [isOpen]="isReadModalOpen" class="instruction-modal" backdropDismiss="false">
+    <div class="modal-content">
+      <div class="modal-graphic" [class.modal-graphic--success]="showReadSuccess">
+        <ion-icon [name]="showReadSuccess ? 'checkmark-circle-outline' : 'radio'"></ion-icon>
+      </div>
+      <h2>{{ showReadSuccess ? 'Tag detectada!' : 'Aproxime a tag NFC' }}</h2>
+      <p>
+        {{ showReadSuccess ? 'Leitura concluída com sucesso. Você já pode descriptografar e copiar sua seed.' : 'Aproxime o dispositivo da tag NFC até sentir a vibração ou ver a confirmação na tela.' }}
+      </p>
+      <ion-button fill="clear" size="small" (click)="closeReadModal()" *ngIf="showReadSuccess">Concluir</ion-button>
+    </div>
+  </ion-modal>
+
+  <ion-modal [isOpen]="isWriteModalOpen" class="instruction-modal" backdropDismiss="false">
+    <div class="modal-content">
+      <div class="modal-graphic" [class.modal-graphic--success]="showWriteSuccess">
+        <ion-icon [name]="showWriteSuccess ? 'checkmark-circle-outline' : 'radio'"></ion-icon>
+      </div>
+      <h2>{{ showWriteSuccess ? 'Dados gravados!' : 'Aproxime a tag NFC' }}</h2>
+      <p>
+        {{ showWriteSuccess ? 'Gravação concluída. Guarde sua tag em local seguro.' : 'Encoste a tag NFC no dispositivo e mantenha-a próxima até a gravação finalizar.' }}
+      </p>
+      <ion-button fill="clear" size="small" (click)="closeWriteModal()" *ngIf="showWriteSuccess">Concluir</ion-button>
+    </div>
+  </ion-modal>
 </ion-content>

@@ -1,6 +1,6 @@
 ﻿import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
+import { IonContent, IonIcon, IonModal, AlertController, IonButton } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { addIcons } from 'ionicons';
 import {
@@ -13,6 +13,8 @@ import {
   copyOutline,
   eyeOutline,
   eyeOffOutline,
+  radio,
+  checkmarkCircleOutline,
 } from 'ionicons/icons';
 import { NfcService } from '../services/nfc.service';
 import { CryptoService } from '../services/crypto.service';
@@ -22,7 +24,7 @@ import { CryptoService } from '../services/crypto.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [FormsModule, IonContent, IonIcon],
+  imports: [FormsModule, IonContent, IonIcon, IonModal, IonButton],
 })
 export class HomePage implements OnInit, OnDestroy {
   seedPhrase = '';
@@ -30,12 +32,19 @@ export class HomePage implements OnInit, OnDestroy {
   encryptedPayload = '';
   passwordVisible = false;
 
+  isReadModalOpen = false;
+  isWriteModalOpen = false;
+  showReadSuccess = false;
+  showWriteSuccess = false;
+
   @ViewChild('passwordInput', { static: false }) passwordInput?: ElementRef<HTMLInputElement>;
 
   private subscriptions = new Subscription();
   private alertController = inject(AlertController);
   private nfcService = inject(NfcService);
   private cryptoService = inject(CryptoService);
+  private readModalTimeout?: ReturnType<typeof setTimeout>;
+  private writeModalTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
     addIcons({
@@ -48,6 +57,8 @@ export class HomePage implements OnInit, OnDestroy {
       'copy-outline': copyOutline,
       'eye-outline': eyeOutline,
       'eye-off-outline': eyeOffOutline,
+      radio,
+      'checkmark-circle-outline': checkmarkCircleOutline,
     });
   }
 
@@ -62,15 +73,15 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.nfcService.writeSuccess$.subscribe(() => {
-        this.seedPhrase = '';
-        this.encryptedPayload = '';
-        this.showAlert('Sucesso', 'Dados escritos na tag NFC com sucesso!');
+        this.handleWriteSuccess();
       })
     );
 
     this.subscriptions.add(
       this.nfcService.error$.subscribe(error => {
         if (error) {
+          this.closeReadModal();
+          this.closeWriteModal();
           this.showAlert('Erro de NFC', error);
         }
       })
@@ -79,6 +90,8 @@ export class HomePage implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+    clearTimeout(this.readModalTimeout);
+    clearTimeout(this.writeModalTimeout);
   }
 
   private onEncryptedPayload(payload: string) {
@@ -88,6 +101,7 @@ export class HomePage implements OnInit, OnDestroy {
     } else {
       this.showAlert('Tag Lida', 'Dados criptografados capturados. Informe a senha e descriptografe para visualizar.');
     }
+    this.handleReadSuccess();
   }
 
   async writeToNFC() {
@@ -98,19 +112,24 @@ export class HomePage implements OnInit, OnDestroy {
       }
     }
 
+    this.openWriteModal();
+
     try {
       await this.nfcService.write(this.encryptedPayload);
     } catch (error) {
       console.error('Erro ao escrever na NFC', error);
+      this.closeWriteModal();
       this.showAlert('Erro de Gravação', 'Não foi possível escrever na tag NFC. Tente novamente.');
     }
   }
 
   async readFromNFC() {
+    this.openReadModal();
     try {
       await this.nfcService.read();
     } catch (error) {
       console.error('Erro ao ler da NFC', error);
+      this.closeReadModal();
       this.showAlert('Erro de Leitura', 'Não foi possível ler a tag NFC.');
     }
   }
@@ -199,6 +218,49 @@ export class HomePage implements OnInit, OnDestroy {
       console.error('Erro ao copiar texto', error);
       this.showAlert('Erro ao copiar', 'Não foi possível copiar o conteúdo.');
     }
+  }
+
+  private openReadModal() {
+    clearTimeout(this.readModalTimeout);
+    this.showReadSuccess = false;
+    this.isReadModalOpen = true;
+  }
+
+  private openWriteModal() {
+    clearTimeout(this.writeModalTimeout);
+    this.showWriteSuccess = false;
+    this.isWriteModalOpen = true;
+  }
+
+  private handleReadSuccess() {
+    if (!this.isReadModalOpen) {
+      return;
+    }
+    this.showReadSuccess = true;
+    clearTimeout(this.readModalTimeout);
+    this.readModalTimeout = setTimeout(() => this.closeReadModal(), 1400);
+  }
+
+  private handleWriteSuccess() {
+    this.seedPhrase = '';
+    this.encryptedPayload = '';
+    if (this.isWriteModalOpen) {
+      this.showWriteSuccess = true;
+      clearTimeout(this.writeModalTimeout);
+      this.writeModalTimeout = setTimeout(() => this.closeWriteModal(), 1400);
+    } else {
+      this.showAlert('Sucesso', 'Dados escritos na tag NFC com sucesso!');
+    }
+  }
+
+  closeReadModal() {
+    this.isReadModalOpen = false;
+    this.showReadSuccess = false;
+  }
+
+  closeWriteModal() {
+    this.isWriteModalOpen = false;
+    this.showWriteSuccess = false;
   }
 
   async showAlert(header: string, message: string) {

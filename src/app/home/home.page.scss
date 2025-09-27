@@ -291,6 +291,65 @@ ion-content.page {
   transform: translateY(-2px);
 }
 
+.instruction-modal::part(backdrop) {
+  background: rgba(5, 12, 24, 0.76);
+  backdrop-filter: blur(4px);
+}
+
+.instruction-modal::part(content) {
+  background: linear-gradient(160deg, rgba(12, 23, 41, 0.98), rgba(8, 18, 33, 0.98));
+  border-radius: 22px;
+  border: 1px solid rgba(62, 124, 255, 0.25);
+  box-shadow: 0 24px 45px rgba(2, 10, 24, 0.6);
+  padding: 2.25rem 2rem;
+  max-width: 360px;
+  margin: auto;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+}
+
+.modal-graphic {
+  width: 108px;
+  height: 108px;
+  border-radius: 26px;
+  background: radial-gradient(circle at top, rgba(47, 140, 255, 0.28), rgba(10, 24, 46, 0.9));
+  display: grid;
+  place-items: center;
+  font-size: 3rem;
+  color: #74b0ff;
+  box-shadow: inset 0 0 25px rgba(57, 140, 255, 0.25), 0 16px 32px rgba(15, 50, 122, 0.45);
+  transition: background 0.25s ease, transform 0.25s ease, color 0.25s ease;
+}
+
+.modal-graphic--success {
+  background: radial-gradient(circle at top, rgba(56, 199, 147, 0.35), rgba(10, 40, 35, 0.9));
+  color: #73ffce;
+  transform: scale(1.05);
+}
+
+.modal-content h2 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-content p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.modal-content ion-button {
+  margin-top: 0.5rem;
+  color: #9ec3ff;
+}
+
 @media (max-width: 540px) {
   .hero {
     border-bottom-left-radius: 18px;
@@ -301,3 +360,4 @@ ion-content.page {
     margin-top: -2.5rem;
   }
 }
+

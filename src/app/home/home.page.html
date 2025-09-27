@@ -11,19 +11,54 @@
       <h3 class="tool-card__title">Gerenciar Dados</h3>
       <p class="tool-card__text">Informe os dados necessários para cada etapa e utilize as ações para trabalhar com sua seed phrase.</p>
 
-      <div class="form-group">
+      <div class="form-group textarea-group">
         <label for="seedPhrase">Frase de Recuperação</label>
-        <textarea id="seedPhrase" [(ngModel)]="seedPhrase" rows="3" placeholder="Digite aqui sua seed phrase"></textarea>
+        <textarea
+          id="seedPhrase"
+          [(ngModel)]="seedPhrase"
+          rows="3"
+          placeholder="Digite aqui sua seed phrase">
+        </textarea>
+        <button
+          type="button"
+          class="icon-button"
+          (click)="copySeedPhrase()"
+          [disabled]="!seedPhrase">
+          <ion-icon name="copy-outline"></ion-icon>
+        </button>
       </div>
 
       <div class="form-row">
-        <div class="form-group">
+        <div class="form-group textarea-group">
           <label for="password">Senha</label>
-          <input id="password" type="password" [(ngModel)]="password" placeholder="Informe a senha" />
+          <input
+            #passwordInput
+            id="password"
+            type="password"
+            [(ngModel)]="password"
+            placeholder="Informe a senha" />
+          <button
+            type="button"
+            class="icon-button"
+            (click)="togglePasswordVisibility()">
+            <ion-icon [name]="passwordVisible ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+          </button>
         </div>
-        <div class="form-group">
+        <div class="form-group textarea-group">
           <label for="encrypted">Dados Criptografados</label>
-          <textarea id="encrypted" [(ngModel)]="encryptedPayload" rows="3" placeholder="Resultado da criptografia ou leitura"></textarea>
+          <textarea
+            id="encrypted"
+            [(ngModel)]="encryptedPayload"
+            rows="3"
+            placeholder="Resultado da criptografia ou leitura">
+          </textarea>
+          <button
+            type="button"
+            class="icon-button"
+            (click)="copyEncryptedPayload()"
+            [disabled]="!encryptedPayload">
+            <ion-icon name="copy-outline"></ion-icon>
+          </button>
         </div>
       </div>
 
@@ -34,11 +69,6 @@
       <div class="tool-actions">
         <button type="button" class="btn btn--outline" (click)="readFromNFC()">Ler Tag NFC</button>
         <button type="button" class="btn btn--solid" (click)="writeToNFC()">Escrever Tag NFC</button>
-      </div>
-      <div class="tool-actions tool-actions--single">
-        <button type="button" class="btn btn--ghost" (click)="copySeedPhrase()" [disabled]="!seedPhrase">
-          Copiar seed descriptografada
-        </button>
       </div>
     </section>
 

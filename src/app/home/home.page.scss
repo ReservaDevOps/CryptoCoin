@@ -89,6 +89,39 @@ ion-content.page {
   flex-direction: column;
   gap: 0.5rem;
   width: 100%;
+  position: relative;
+}
+
+.textarea-group textarea,
+.textarea-group input {
+  padding-right: 3rem;
+}
+
+.textarea-group .icon-button {
+  position: absolute;
+  top: 38px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid rgba(114, 144, 255, 0.25);
+  background: rgba(15, 35, 62, 0.65);
+  display: grid;
+  place-items: center;
+  color: #aac6ff;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.textarea-group .icon-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.textarea-group .icon-button:not(:disabled):hover {
+  background: rgba(21, 58, 120, 0.85);
+  border-color: rgba(114, 144, 255, 0.5);
+  transform: translateY(-2px);
 }
 
 .form-group label {
@@ -133,11 +166,6 @@ ion-content.page {
   gap: 0.75rem;
 }
 
-.tool-actions--single {
-  grid-template-columns: minmax(200px, 1fr);
-  justify-content: start;
-}
-
 .btn {
   border-radius: 14px;
   padding: 0.85rem 1.25rem;
@@ -173,18 +201,6 @@ ion-content.page {
 .btn--outline:hover:not(:disabled) {
   transform: translateY(-3px);
   border-color: rgba(94, 123, 255, 0.55);
-}
-
-.btn--ghost {
-  background: transparent;
-  color: #7faeff;
-  border-color: rgba(127, 174, 255, 0.25);
-}
-
-.btn--ghost:hover:not(:disabled) {
-  transform: translateY(-3px);
-  border-color: rgba(127, 174, 255, 0.45);
-  box-shadow: 0 10px 24px rgba(31, 123, 255, 0.16);
 }
 
 .security-card {

@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, inject, ViewChild, ElementRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
@@ -10,6 +10,9 @@ import {
   radioOutline,
   codeSlash,
   logoGithub,
+  copyOutline,
+  eyeOutline,
+  eyeOffOutline,
 } from 'ionicons/icons';
 import { NfcService } from '../services/nfc.service';
 import { CryptoService } from '../services/crypto.service';
@@ -25,6 +28,9 @@ export class HomePage implements OnInit, OnDestroy {
   seedPhrase = '';
   password = '';
   encryptedPayload = '';
+  passwordVisible = false;
+
+  @ViewChild('passwordInput', { static: false }) passwordInput?: ElementRef<HTMLInputElement>;
 
   private subscriptions = new Subscription();
   private alertController = inject(AlertController);
@@ -39,6 +45,9 @@ export class HomePage implements OnInit, OnDestroy {
       'radio-outline': radioOutline,
       'code-slash': codeSlash,
       'logo-github': logoGithub,
+      'copy-outline': copyOutline,
+      'eye-outline': eyeOutline,
+      'eye-off-outline': eyeOffOutline,
     });
   }
 
@@ -150,25 +159,45 @@ export class HomePage implements OnInit, OnDestroy {
       this.showAlert('Nada para copiar', 'Descriptografe a tag antes de copiar a frase.');
       return;
     }
+    await this.copyToClipboard(this.seedPhrase, 'Seed phrase copiada para a área de transferência.');
+  }
 
+  async copyEncryptedPayload() {
+    if (!this.encryptedPayload) {
+      this.showAlert('Nada para copiar', 'Não há dados criptografados disponíveis.');
+      return;
+    }
+    await this.copyToClipboard(this.encryptedPayload, 'Dados criptografados copiados para a área de transferência.');
+  }
+
+  togglePasswordVisibility() {
+    const input = this.passwordInput?.nativeElement;
+    if (!input) {
+      return;
+    }
+
+    this.passwordVisible = !this.passwordVisible;
+    input.type = this.passwordVisible ? 'text' : 'password';
+  }
+
+  private async copyToClipboard(value: string, successMessage: string) {
     try {
       if (navigator?.clipboard?.writeText) {
-        await navigator.clipboard.writeText(this.seedPhrase);
-        this.showAlert('Copiado', 'Seed phrase copiada para a área de transferência.');
+        await navigator.clipboard.writeText(value);
       } else {
         const textarea = document.createElement('textarea');
-        textarea.value = this.seedPhrase;
+        textarea.value = value;
         textarea.style.position = 'fixed';
         textarea.style.opacity = '0';
         document.body.appendChild(textarea);
         textarea.select();
         document.execCommand('copy');
         document.body.removeChild(textarea);
-        this.showAlert('Copiado', 'Seed phrase copiada para a área de transferência.');
       }
+      this.showAlert('Copiado', successMessage);
     } catch (error) {
-      console.error('Erro ao copiar seed phrase', error);
-      this.showAlert('Erro ao copiar', 'Não foi possível copiar a seed phrase.');
+      console.error('Erro ao copiar texto', error);
+      this.showAlert('Erro ao copiar', 'Não foi possível copiar o conteúdo.');
     }
   }
 

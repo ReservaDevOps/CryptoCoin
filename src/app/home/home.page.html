@@ -1,60 +1,112 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      CryptoCoin
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content fullscreen class="page">
+  <section class="hero">
+    <img src="assets/crypto-coin-logo.png" alt="Crypto Coin" class="hero__logo" />
+    <h1 class="hero__title">Crypto Coin</h1>
+    <p class="hero__subtitle">Offline ColdWallet</p>
+    <p class="hero__description">Proteja suas chaves cripto com tecnologia NFC</p>
+  </section>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">CryptoCoin</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <section class="main" id="content">
+    <header class="intro">
+      <h2>O que deseja fazer?</h2>
+      <p>Escolha uma das opções abaixo para gerenciar suas chaves</p>
+    </header>
 
-  <div id="container">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Gerenciador de Chaves NFC</ion-card-title>
-        <ion-card-subtitle>Proteja suas chaves com segurança</ion-card-subtitle>
-      </ion-card-header>
+    <div class="action-grid">
+      <button class="action-card action-card--primary" type="button" (click)="readFromNFC()">
+        <div class="action-card__icon">
+          <ion-icon name="wifi"></ion-icon>
+        </div>
+        <h3>Ler Tag</h3>
+        <p>Ler dados de uma tag NFC</p>
+      </button>
 
-      <ion-card-content>
-        <ion-item>
-          <ion-label position="floating">Frase de Recuperação</ion-label>
-          <ion-textarea [(ngModel)]="seedPhrase" rows="4"></ion-textarea>
-        </ion-item>
+      <button class="action-card action-card--success" type="button" (click)="encryptSeed()">
+        <div class="action-card__icon">
+          <ion-icon name="lock-closed"></ion-icon>
+        </div>
+        <h3>Criptografar</h3>
+        <p>Criptografar sua frase de recuperação</p>
+      </button>
 
-        <ion-item>
-          <ion-label position="floating">Senha</ion-label>
-          <ion-input [(ngModel)]="password" type="password"></ion-input>
-        </ion-item>
+      <button class="action-card action-card--warning" type="button" (click)="decryptPayload()">
+        <div class="action-card__icon">
+          <ion-icon name="lock-open"></ion-icon>
+        </div>
+        <h3>Descriptografar</h3>
+        <p>Descriptografar dados protegidos</p>
+      </button>
 
-        <ion-item>
-          <ion-label position="floating">Dados Criptografados</ion-label>
-          <ion-textarea [(ngModel)]="encryptedPayload" rows="4"></ion-textarea>
-        </ion-item>
+      <button class="action-card action-card--neutral" type="button" (click)="writeToNFC()">
+        <div class="action-card__icon">
+          <ion-icon name="shield-checkmark"></ion-icon>
+        </div>
+        <h3>Escrever Tag</h3>
+        <p>Gravar dados em uma tag NFC</p>
+      </button>
+    </div>
 
-        <ion-grid>
-          <ion-row>
-            <ion-col size="6">
-              <ion-button (click)="readFromNFC()" expand="block" fill="outline">Ler Tag</ion-button>
-            </ion-col>
-            <ion-col size="6">
-              <ion-button (click)="decryptPayload()" expand="block" fill="outline">Descriptografar</ion-button>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col size="6">
-              <ion-button (click)="encryptSeed()" expand="block">Criptografar</ion-button>
-            </ion-col>
-            <ion-col size="6">
-              <ion-button (click)="writeToNFC()" expand="block">Escrever Tag</ion-button>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
-  </div>
+    <section class="tool-card">
+      <h3 class="tool-card__title">Gerenciar Dados</h3>
+      <p class="tool-card__text">Informe os dados necessários para cada etapa e utilize as ações para trabalhar com sua seed phrase.</p>
+
+      <div class="form-group">
+        <label for="seedPhrase">Frase de Recuperação</label>
+        <textarea id="seedPhrase" [(ngModel)]="seedPhrase" rows="3" placeholder="Digite aqui sua seed phrase"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="password">Senha</label>
+          <input id="password" type="password" [(ngModel)]="password" placeholder="Informe a senha" />
+        </div>
+        <div class="form-group">
+          <label for="encrypted">Dados Criptografados</label>
+          <textarea id="encrypted" [(ngModel)]="encryptedPayload" rows="3" placeholder="Resultado da criptografia ou leitura"></textarea>
+        </div>
+      </div>
+
+      <div class="tool-actions">
+        <button type="button" class="btn btn--outline" (click)="decryptPayload()">Descriptografar</button>
+        <button type="button" class="btn btn--solid" (click)="encryptSeed()">Criptografar</button>
+      </div>
+      <div class="tool-actions">
+        <button type="button" class="btn btn--outline" (click)="readFromNFC()">Ler Tag NFC</button>
+        <button type="button" class="btn btn--solid" (click)="writeToNFC()">Escrever Tag NFC</button>
+      </div>
+    </section>
+
+    <section class="security-card">
+      <header class="security-card__header">
+        <ion-icon name="shield-half-outline"></ion-icon>
+        <div>
+          <h3>Segurança Offline</h3>
+          <p>Proteção completa para suas chaves e tags NFC</p>
+        </div>
+      </header>
+      <ul class="security-list">
+        <li>
+          <ion-icon name="lock-closed"></ion-icon>
+          <div>
+            <strong>Criptografia AES-256</strong>
+            <span>Suas chaves são protegidas com criptografia militar</span>
+          </div>
+        </li>
+        <li>
+          <ion-icon name="cloud-offline"></ion-icon>
+          <div>
+            <strong>100% Offline</strong>
+            <span>Nenhum dado é transmitido pela internet</span>
+          </div>
+        </li>
+        <li>
+          <ion-icon name="radio"></ion-icon>
+          <div>
+            <strong>Tecnologia NFC</strong>
+            <span>Armazenamento físico em tags NFC</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+  </section>
 </ion-content>

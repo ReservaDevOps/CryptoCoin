@@ -1,25 +1,6 @@
 import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
-  IonItem,
-  IonLabel,
-  IonTextarea,
-  IonInput,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonButton,
-  AlertController,
-} from '@ionic/angular/standalone';
+import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
 import { NfcService } from '../services/nfc.service';
 import { CryptoService } from '../services/crypto.service';
@@ -29,26 +10,7 @@ import { CryptoService } from '../services/crypto.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [
-    FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardSubtitle,
-    IonCardContent,
-    IonItem,
-    IonLabel,
-    IonTextarea,
-    IonInput,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonButton,
-  ],
+  imports: [FormsModule, IonContent, IonIcon],
 })
 export class HomePage implements OnInit, OnDestroy {
   seedPhrase = '';

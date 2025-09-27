@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+Ôªøimport { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
@@ -57,7 +57,7 @@ export class HomePage implements OnInit, OnDestroy {
 
   async writeToNFC() {
     if (!this.encryptedPayload) {
-      this.showAlert('Dados Necess·rios', 'Informe ou gere os dados criptografados antes de escrever.');
+      this.showAlert('Dados Necess√°rios', 'Informe ou gere os dados criptografados antes de escrever.');
       return;
     }
 
@@ -65,7 +65,7 @@ export class HomePage implements OnInit, OnDestroy {
       await this.nfcService.write(this.encryptedPayload);
     } catch (error) {
       console.error('Erro ao escrever na NFC', error);
-      this.showAlert('Erro de GravaÁ„o', 'N„o foi possÌvel escrever na tag NFC. Tente novamente.');
+      this.showAlert('Erro de Grava√ß√£o', 'N√£o foi poss√≠vel escrever na tag NFC. Tente novamente.');
     }
   }
 
@@ -74,13 +74,13 @@ export class HomePage implements OnInit, OnDestroy {
       await this.nfcService.read();
     } catch (error) {
       console.error('Erro ao ler da NFC', error);
-      this.showAlert('Erro de Leitura', 'N„o foi possÌvel ler a tag NFC.');
+      this.showAlert('Erro de Leitura', 'N√£o foi poss√≠vel ler a tag NFC.');
     }
   }
 
   encryptSeed() {
     if (!this.seedPhrase || !this.password) {
-      this.showAlert('Campos Necess·rios', 'Preencha a frase de recuperaÁ„o e a senha para criptografar.');
+      this.showAlert('Campos Necess√°rios', 'Preencha a frase de recupera√ß√£o e a senha para criptografar.');
       return;
     }
 
@@ -89,18 +89,18 @@ export class HomePage implements OnInit, OnDestroy {
       this.showAlert('Criptografia', 'Dados criptografados com sucesso.');
     } catch (error) {
       console.error('Erro ao criptografar', error);
-      this.showAlert('Erro de Criptografia', 'N„o foi possÌvel criptografar os dados.');
+      this.showAlert('Erro de Criptografia', 'N√£o foi poss√≠vel criptografar os dados.');
     }
   }
 
   decryptPayload() {
     if (!this.encryptedPayload) {
-      this.showAlert('Dados Necess·rios', 'N„o h· dados criptografados para descriptografar.');
+      this.showAlert('Dados Necess√°rios', 'N√£o h√° dados criptografados para descriptografar.');
       return;
     }
 
     if (!this.password) {
-      this.showAlert('Senha Necess·ria', 'Informe a senha para descriptografar os dados.');
+      this.showAlert('Senha Necess√°ria', 'Informe a senha para descriptografar os dados.');
       return;
     }
 
@@ -109,7 +109,7 @@ export class HomePage implements OnInit, OnDestroy {
       this.showAlert('Descriptografia', 'Dados descriptografados com sucesso.');
     } catch (error) {
       console.error('Erro de descriptografia', error);
-      this.showAlert('Erro de Descriptografia', 'N„o foi possÌvel descriptografar os dados. Verifique a senha.');
+      this.showAlert('Erro de Descriptografia', 'N√£o foi poss√≠vel descriptografar os dados. Verifique a senha.');
     }
   }
 

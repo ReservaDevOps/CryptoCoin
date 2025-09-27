@@ -1,7 +1,13 @@
 /* eslint-disable @angular-eslint/prefer-inject */
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { NFCTagInfo } from 'capacitor-nfc-plugin/dist/esm/definitions';
+
+type MockTagInfo = {
+  id: string;
+  type: string;
+  techTypes: string[];
+  records: Array<{ payload: string }>;
+};
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +15,7 @@ import { NFCTagInfo } from 'capacitor-nfc-plugin/dist/esm/definitions';
 export class NfcMockService {
   private mockTagContent: string | null = null;
 
-  private tagReadSubject = new BehaviorSubject<NFCTagInfo | null>(null);
+  private tagReadSubject = new BehaviorSubject<MockTagInfo | null>(null);
   tagRead$ = this.tagReadSubject.asObservable();
 
   private writeSuccessSubject = new Subject<void>();
@@ -38,7 +44,7 @@ export class NfcMockService {
     return new Promise(resolve => {
       setTimeout(() => {
         if (this.mockTagContent) {
-          const mockTag: any = {
+          const mockTag: MockTagInfo = {
             id: 'mock-id',
             type: 'mock-type',
             techTypes: [],

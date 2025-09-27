@@ -10,19 +10,14 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-
     "cap:sync:android": "npx cap sync android",
     "cap:copy:android": "npx cap copy android",
     "cap:open:android": "npx cap open android",
-
     "preandroid:open": "npm run build && npm run cap:sync:android",
     "android:open": "npm run cap:open:android",
-
     "preandroid:run": "npm run build && npm run cap:copy:android",
     "android:run": "npx cap run android",
-
     "android:run:lr": "npx cap run android -l --external",
-
     "android": "npm run android:open"
   },
   "private": true,
@@ -41,8 +36,8 @@
     "@capacitor/haptics": "7.0.1",
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
+    "@exxili/capacitor-nfc": "^0.0.11",
     "@ionic/angular": "^8.0.0",
-    "capacitor-nfc-plugin": "^1.1.4",
     "crypto-js": "^4.2.0",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",

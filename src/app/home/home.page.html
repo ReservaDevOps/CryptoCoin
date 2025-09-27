@@ -17,12 +17,12 @@
     <ion-card>
       <ion-card-header>
         <ion-card-title>Gerenciador de Chaves NFC</ion-card-title>
-        <ion-card-subtitle>Proteja suas chaves com seguranÃ§a</ion-card-subtitle>
+        <ion-card-subtitle>Proteja suas chaves com segurança</ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
         <ion-item>
-          <ion-label position="floating">Frase de RecuperaÃ§Ã£o</ion-label>
+          <ion-label position="floating">Frase de Recuperação</ion-label>
           <ion-textarea [(ngModel)]="seedPhrase" rows="4"></ion-textarea>
         </ion-item>
 
@@ -31,13 +31,26 @@
           <ion-input [(ngModel)]="password" type="password"></ion-input>
         </ion-item>
 
+        <ion-item>
+          <ion-label position="floating">Dados Criptografados</ion-label>
+          <ion-textarea [(ngModel)]="encryptedPayload" rows="4"></ion-textarea>
+        </ion-item>
+
         <ion-grid>
           <ion-row>
-            <ion-col>
-              <ion-button (click)="readFromNFC()" expand="block" fill="outline">Ler NFC</ion-button>
+            <ion-col size="6">
+              <ion-button (click)="readFromNFC()" expand="block" fill="outline">Ler Tag</ion-button>
             </ion-col>
-            <ion-col>
-              <ion-button (click)="writeToNFC()" expand="block">Escrever NFC</ion-button>
+            <ion-col size="6">
+              <ion-button (click)="decryptPayload()" expand="block" fill="outline">Descriptografar</ion-button>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button (click)="encryptSeed()" expand="block">Criptografar</ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button (click)="writeToNFC()" expand="block">Escrever Tag</ion-button>
             </ion-col>
           </ion-row>
         </ion-grid>

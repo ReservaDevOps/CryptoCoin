@@ -35,6 +35,11 @@
         <button type="button" class="btn btn--outline" (click)="readFromNFC()">Ler Tag NFC</button>
         <button type="button" class="btn btn--solid" (click)="writeToNFC()">Escrever Tag NFC</button>
       </div>
+      <div class="tool-actions tool-actions--single">
+        <button type="button" class="btn btn--ghost" (click)="copySeedPhrase()" [disabled]="!seedPhrase">
+          Copiar seed descriptografada
+        </button>
+      </div>
     </section>
 
     <section class="security-card">
@@ -65,6 +70,17 @@
           <div>
             <strong>Tecnologia NFC</strong>
             <span>Armazenamento físico em tags NFC</span>
+          </div>
+        </li>
+        <li class="security-list__opensource">
+          <ion-icon name="code-slash"></ion-icon>
+          <div>
+            <strong>Open Source</strong>
+            <span>Projeto aberto que pode ser compilado, testado e melhorado por qualquer pessoa.</span>
+            <a class="repo-link" href="https://github.com/ReservaDevOps/CryptoCoin" target="_blank" rel="noopener noreferrer">
+              <ion-icon name="logo-github"></ion-icon>
+              Ver no GitHub
+            </a>
           </div>
         </li>
       </ul>

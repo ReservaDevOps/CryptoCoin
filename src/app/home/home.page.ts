@@ -8,6 +8,8 @@ import {
   lockClosedOutline,
   cloudOfflineOutline,
   radioOutline,
+  codeSlash,
+  logoGithub,
 } from 'ionicons/icons';
 import { NfcService } from '../services/nfc.service';
 import { CryptoService } from '../services/crypto.service';
@@ -35,6 +37,8 @@ export class HomePage implements OnInit, OnDestroy {
       'lock-closed-outline': lockClosedOutline,
       'cloud-offline-outline': cloudOfflineOutline,
       'radio-outline': radioOutline,
+      'code-slash': codeSlash,
+      'logo-github': logoGithub,
     });
   }
 
@@ -49,6 +53,8 @@ export class HomePage implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.nfcService.writeSuccess$.subscribe(() => {
+        this.seedPhrase = '';
+        this.encryptedPayload = '';
         this.showAlert('Sucesso', 'Dados escritos na tag NFC com sucesso!');
       })
     );
@@ -68,13 +74,19 @@ export class HomePage implements OnInit, OnDestroy {
 
   private onEncryptedPayload(payload: string) {
     this.encryptedPayload = payload;
-    this.showAlert('Tag Lida', 'Dados criptografados capturados. Descriptografe para visualizar.');
+    if (this.password) {
+      this.decryptPayload();
+    } else {
+      this.showAlert('Tag Lida', 'Dados criptografados capturados. Informe a senha e descriptografe para visualizar.');
+    }
   }
 
   async writeToNFC() {
     if (!this.encryptedPayload) {
-      this.showAlert('Dados Necessários', 'Informe ou gere os dados criptografados antes de escrever.');
-      return;
+      const encrypted = this.encryptSeed();
+      if (!encrypted) {
+        return;
+      }
     }
 
     try {
@@ -94,38 +106,69 @@ export class HomePage implements OnInit, OnDestroy {
     }
   }
 
-  encryptSeed() {
+  encryptSeed(): boolean {
     if (!this.seedPhrase || !this.password) {
       this.showAlert('Campos Necessários', 'Preencha a frase de recuperação e a senha para criptografar.');
-      return;
+      return false;
     }
 
     try {
       this.encryptedPayload = this.cryptoService.encrypt(this.seedPhrase, this.password);
-      this.showAlert('Criptografia', 'Dados criptografados com sucesso.');
+      this.showAlert('Criptografia', 'Dados criptografados com sucesso. Pronto para gravar na tag.');
+      return true;
     } catch (error) {
       console.error('Erro ao criptografar', error);
       this.showAlert('Erro de Criptografia', 'Não foi possível criptografar os dados.');
+      return false;
     }
   }
 
-  decryptPayload() {
+  decryptPayload(): boolean {
     if (!this.encryptedPayload) {
       this.showAlert('Dados Necessários', 'Não há dados criptografados para descriptografar.');
-      return;
+      return false;
     }
 
     if (!this.password) {
       this.showAlert('Senha Necessária', 'Informe a senha para descriptografar os dados.');
-      return;
+      return false;
     }
 
     try {
       this.seedPhrase = this.cryptoService.decrypt(this.encryptedPayload, this.password);
-      this.showAlert('Descriptografia', 'Dados descriptografados com sucesso.');
+      this.showAlert('Descriptografia', 'Dados descriptografados com sucesso. Já é possível copiar a frase.');
+      return true;
     } catch (error) {
       console.error('Erro de descriptografia', error);
       this.showAlert('Erro de Descriptografia', 'Não foi possível descriptografar os dados. Verifique a senha.');
+      return false;
+    }
+  }
+
+  async copySeedPhrase() {
+    if (!this.seedPhrase) {
+      this.showAlert('Nada para copiar', 'Descriptografe a tag antes de copiar a frase.');
+      return;
+    }
+
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(this.seedPhrase);
+        this.showAlert('Copiado', 'Seed phrase copiada para a área de transferência.');
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = this.seedPhrase;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        this.showAlert('Copiado', 'Seed phrase copiada para a área de transferência.');
+      }
+    } catch (error) {
+      console.error('Erro ao copiar seed phrase', error);
+      this.showAlert('Erro ao copiar', 'Não foi possível copiar a seed phrase.');
     }
   }
 

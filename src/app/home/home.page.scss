@@ -1,4 +1,4 @@
-:host {
+﻿:host {
   --page-background: #050b16;
   --card-background: #0b1627;
   --card-border: rgba(38, 115, 255, 0.2);
@@ -59,115 +59,6 @@ ion-content.page {
   max-width: 920px;
   margin: -3.5rem auto 3.5rem;
   padding: 0 clamp(1.25rem, 4vw, 1.75rem) clamp(4.5rem, 10vw, 6rem);
-}
-
-.intro {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.intro h2 {
-  font-size: clamp(1.35rem, 3.5vw, 1.75rem);
-  font-weight: 600;
-}
-
-.intro p {
-  color: var(--text-muted);
-  margin-top: 0.25rem;
-  font-size: 0.95rem;
-}
-
-.action-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.25rem;
-}
-
-.action-card {
-  background: var(--card-background);
-  border-radius: 18px;
-  border: 1px solid transparent;
-  box-shadow: var(--shadow-card);
-  padding: 1.75rem 1.5rem;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.action-card h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.action-card p {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.action-card__icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  display: grid;
-  place-items: center;
-  align-self: center;
-  font-size: 1.8rem;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.action-card ion-icon {
-  font-size: 1.9rem;
-}
-
-.action-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 20px 45px rgba(15, 75, 179, 0.35);
-}
-
-.action-card--primary {
-  background: var(--blue-primary);
-  border-color: rgba(22, 156, 255, 0.45);
-}
-
-.action-card--primary .action-card__icon {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-.action-card--primary ion-icon {
-  color: #ffffff;
-}
-
-.action-card--success {
-  border-color: rgba(56, 199, 147, 0.4);
-  background: radial-gradient(circle at top, rgba(56, 199, 147, 0.2), transparent 70%);
-}
-
-.action-card--success ion-icon {
-  color: var(--green);
-}
-
-.action-card--warning {
-  border-color: rgba(209, 163, 72, 0.35);
-  background: radial-gradient(circle at top, rgba(209, 163, 72, 0.2), transparent 70%);
-}
-
-.action-card--warning ion-icon {
-  color: var(--amber);
-}
-
-.action-card--neutral {
-  border-color: rgba(77, 93, 132, 0.35);
-  background: radial-gradient(circle at top, rgba(60, 72, 109, 0.35), rgba(11, 22, 39, 0.8));
-}
-
-.action-card--neutral ion-icon {
-  color: #4c86ff;
 }
 
 .tool-card {
@@ -242,6 +133,11 @@ ion-content.page {
   gap: 0.75rem;
 }
 
+.tool-actions--single {
+  grid-template-columns: minmax(200px, 1fr);
+  justify-content: start;
+}
+
 .btn {
   border-radius: 14px;
   padding: 0.85rem 1.25rem;
@@ -252,13 +148,18 @@ ion-content.page {
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .btn--solid {
   background: var(--blue-primary);
   color: #fff;
   box-shadow: 0 12px 24px rgba(16, 110, 230, 0.35);
 }
 
-.btn--solid:hover {
+.btn--solid:hover:not(:disabled) {
   transform: translateY(-3px);
   box-shadow: 0 18px 36px rgba(16, 110, 230, 0.4);
 }
@@ -269,9 +170,21 @@ ion-content.page {
   border-color: rgba(94, 123, 255, 0.35);
 }
 
-.btn--outline:hover {
+.btn--outline:hover:not(:disabled) {
   transform: translateY(-3px);
   border-color: rgba(94, 123, 255, 0.55);
+}
+
+.btn--ghost {
+  background: transparent;
+  color: #7faeff;
+  border-color: rgba(127, 174, 255, 0.25);
+}
+
+.btn--ghost:hover:not(:disabled) {
+  transform: translateY(-3px);
+  border-color: rgba(127, 174, 255, 0.45);
+  box-shadow: 0 10px 24px rgba(31, 123, 255, 0.16);
 }
 
 .security-card {
@@ -291,7 +204,7 @@ ion-content.page {
 }
 
 .security-card__header ion-icon {
-  font-size: 2rem;
+  font-size: 1.6rem;
   color: #4c8dff;
 }
 
@@ -323,9 +236,9 @@ ion-content.page {
 }
 
 .security-list ion-icon {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: #55b7ff;
-  margin-top: 0.2rem;
+  margin-top: 0.1rem;
 }
 
 .security-list strong {
@@ -338,6 +251,30 @@ ion-content.page {
   font-size: 0.9rem;
 }
 
+.security-list__opensource .repo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-weight: 600;
+  color: #89b6ff;
+  text-decoration: none;
+  background: rgba(40, 95, 205, 0.18);
+  padding: 0.45rem 0.9rem;
+  border-radius: 12px;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.security-list__opensource .repo-link ion-icon {
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.security-list__opensource .repo-link:hover {
+  background: rgba(40, 95, 205, 0.28);
+  transform: translateY(-2px);
+}
+
 @media (max-width: 540px) {
   .hero {
     border-bottom-left-radius: 18px;
@@ -346,9 +283,5 @@ ion-content.page {
 
   .main {
     margin-top: -2.5rem;
-  }
-
-  .action-grid {
-    grid-template-columns: 1fr;
   }
 }

@@ -2,6 +2,13 @@
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonIcon, AlertController } from '@ionic/angular/standalone';
 import { Subscription } from 'rxjs';
+import { addIcons } from 'ionicons';
+import {
+  shieldHalfOutline,
+  lockClosedOutline,
+  cloudOfflineOutline,
+  radioOutline,
+} from 'ionicons/icons';
 import { NfcService } from '../services/nfc.service';
 import { CryptoService } from '../services/crypto.service';
 
@@ -21,6 +28,15 @@ export class HomePage implements OnInit, OnDestroy {
   private alertController = inject(AlertController);
   private nfcService = inject(NfcService);
   private cryptoService = inject(CryptoService);
+
+  constructor() {
+    addIcons({
+      'shield-half-outline': shieldHalfOutline,
+      'lock-closed-outline': lockClosedOutline,
+      'cloud-offline-outline': cloudOfflineOutline,
+      'radio-outline': radioOutline,
+    });
+  }
 
   ngOnInit() {
     this.subscriptions.add(

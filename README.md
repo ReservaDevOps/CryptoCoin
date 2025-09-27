@@ -103,3 +103,6 @@ No diretório do projeto, você pode executar:
 ## Licença
 
 Este projeto está licenciado sob a [Licença Pública Geral GNU v3.0](https://www.gnu.org/licenses/gpl-3.0.html).
+## Diretrizes para Contribuidores
+
+Consulte [Repository Guidelines](AGENTS.md) para instruções de estrutura, comandos e processo de revisão antes de abrir um pull request.

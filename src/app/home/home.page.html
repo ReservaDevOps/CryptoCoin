@@ -1,4 +1,4 @@
-﻿<ion-content fullscreen class="page">
+﻿<ion-content [fullscreen]="true" class="page">
   <section class="hero">
     <img src="assets/crypto-coin-logo.png" alt="Crypto Coin" class="hero__logo" />
     <h1 class="hero__title">Crypto Coin</h1>
@@ -84,29 +84,29 @@
         <li>
           <ion-icon name="lock-closed-outline"></ion-icon>
           <div>
-            <strong>Criptografia AES-256</strong>
+            <strong>Criptografia AES-256</strong><br>
             <span>Suas chaves são protegidas com criptografia militar</span>
           </div>
         </li>
         <li>
           <ion-icon name="cloud-offline-outline"></ion-icon>
           <div>
-            <strong>100% Offline</strong>
+            <strong>100% Offline</strong><br>
             <span>Nenhum dado é transmitido pela internet</span>
           </div>
         </li>
         <li>
           <ion-icon name="radio-outline"></ion-icon>
           <div>
-            <strong>Tecnologia NFC</strong>
+            <strong>Tecnologia NFC</strong><br>
             <span>Armazenamento físico em tags NFC</span>
           </div>
         </li>
         <li class="security-list__opensource">
           <ion-icon name="code-slash"></ion-icon>
           <div>
-            <strong>Open Source</strong>
-            <span>Projeto aberto que pode ser compilado, testado e melhorado por qualquer pessoa.</span>
+            <strong>Open Source</strong><br>
+            <span>Projeto aberto que pode ser compilado, testado e melhorado por qualquer pessoa.</span><br>
             <a class="repo-link" href="https://github.com/ReservaDevOps/CryptoCoin" target="_blank" rel="noopener noreferrer">
               <ion-icon name="logo-github"></ion-icon>
               Ver no GitHub
@@ -117,7 +117,7 @@
     </section>
   </section>
 
-  <ion-modal [isOpen]="isReadModalOpen" class="instruction-modal" backdropDismiss="false">
+  <ion-modal [isOpen]="isReadModalOpen" class="instruction-modal" [backdropDismiss]="false">
     <div class="modal-content">
       <div class="modal-graphic" [class.modal-graphic--success]="showReadSuccess">
         <ion-icon [name]="showReadSuccess ? 'checkmark-circle-outline' : 'radio'"></ion-icon>
@@ -126,11 +126,13 @@
       <p>
         {{ showReadSuccess ? 'Leitura concluída com sucesso. Você já pode descriptografar e copiar sua seed.' : 'Aproxime o dispositivo da tag NFC até sentir a vibração ou ver a confirmação na tela.' }}
       </p>
-      <ion-button fill="clear" size="small" (click)="closeReadModal()" *ngIf="showReadSuccess">Concluir</ion-button>
+      @if (showReadSuccess) {
+        <ion-button fill="clear" size="small" (click)="closeReadModal()">Concluir</ion-button>
+      }
     </div>
   </ion-modal>
 
-  <ion-modal [isOpen]="isWriteModalOpen" class="instruction-modal" backdropDismiss="false">
+  <ion-modal [isOpen]="isWriteModalOpen" class="instruction-modal" [backdropDismiss]="false">
     <div class="modal-content">
       <div class="modal-graphic" [class.modal-graphic--success]="showWriteSuccess">
         <ion-icon [name]="showWriteSuccess ? 'checkmark-circle-outline' : 'radio'"></ion-icon>
@@ -139,7 +141,9 @@
       <p>
         {{ showWriteSuccess ? 'Gravação concluída. Guarde sua tag em local seguro.' : 'Encoste a tag NFC no dispositivo e mantenha-a próxima até a gravação finalizar.' }}
       </p>
-      <ion-button fill="clear" size="small" (click)="closeWriteModal()" *ngIf="showWriteSuccess">Concluir</ion-button>
+      @if (showWriteSuccess) {
+        <ion-button fill="clear" size="small" (click)="closeWriteModal()">Concluir</ion-button>
+      }
     </div>
   </ion-modal>
 </ion-content>

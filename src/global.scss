@@ -1,5 +1,6 @@
 /*
  * App Global CSS
+
  * ----------------------------------------------------------------------------
  * Put style rules here that you want to apply globally. These styles are for
  * the entire app and not just one component. Additionally, this file can be
@@ -8,6 +9,41 @@
  * For more information on global stylesheets, visit the documentation:
  * https://ionicframework.com/docs/layout/global-stylesheets
  */
+
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$cryptocoin-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$blue-palette,
+    tertiary: mat.$cyan-palette,
+  ),
+  density: (
+    scale: -1,
+  ),
+));
+
+@include mat.all-component-themes($cryptocoin-theme);
+
+:root {
+  --mat-form-field-filled-container-color: rgba(12, 23, 41, 0.82);
+  --mat-form-field-filled-hover-container-color: rgba(17, 52, 110, 0.88);
+  --mat-form-field-filled-focus-container-color: rgba(17, 52, 110, 0.95);
+  --mat-form-field-label-text-color: #9ec3ff;
+  --mat-form-field-input-text-color: #f6fbff;
+  --mat-form-field-active-indicator-color: rgba(47, 140, 255, 0.55);
+  --mat-form-field-focus-active-indicator-color: #1fd0ff;
+  --mat-select-trigger-text-color: #f6fbff;
+  --mat-select-arrow-color: #68b3ff;
+  --mat-select-panel-background-color: rgba(12, 23, 41, 0.96);
+  --mat-option-label-text-color: #d1e3ff;
+  --mat-option-selected-state-layer-color: rgba(47, 140, 255, 0.35);
+  --mat-option-hover-state-layer-color: rgba(47, 140, 255, 0.2);
+  --mat-option-focus-state-layer-color: rgba(47, 140, 255, 0.25);
+  --mat-option-selected-state-label-text-color: #ffffff;
+}
 
 /* Core CSS required for Ionic components to work properly */
 @import "@ionic/angular/css/core.css";
@@ -35,3 +71,48 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+.algorithm-select .mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: rgba(12, 23, 41, 0.82);
+  --mdc-filled-text-field-hover-container-color: rgba(17, 52, 110, 0.88);
+  --mdc-filled-text-field-focus-container-color: rgba(17, 52, 110, 0.95);
+  --mdc-filled-text-field-label-text-color: #9ec3ff;
+  --mdc-filled-text-field-input-text-color: #f6fbff;
+  --mdc-filled-text-field-active-indicator-color: rgba(47, 140, 255, 0.55);
+  --mdc-filled-text-field-focus-active-indicator-color: #1fd0ff;
+  --mat-select-trigger-text-color: #f6fbff;
+  --mat-select-arrow-color: #68b3ff;
+}
+
+.algorithm-select .mat-mdc-text-field-wrapper {
+  border-radius: 14px;
+  border: 1px solid rgba(56, 107, 255, 0.28);
+  background: rgba(12, 23, 41, 0.78);
+  box-shadow: 0 16px 32px rgba(4, 14, 30, 0.45);
+}
+
+.algorithm-select .mat-mdc-text-field-wrapper:hover {
+  border-color: rgba(56, 107, 255, 0.45);
+}
+
+.algorithm-select__panel {
+  --mat-select-panel-background-color: rgba(12, 23, 41, 0.96);
+  background: rgba(12, 23, 41, 0.96);
+  border: 1px solid rgba(47, 140, 255, 0.4);
+  box-shadow: 0 24px 48px rgba(4, 14, 30, 0.6);
+}
+
+.algorithm-select__panel .mat-mdc-option {
+  color: #d1e3ff;
+  --mat-option-label-text-color: #d1e3ff;
+  --mat-option-selected-state-layer-color: rgba(47, 140, 255, 0.35);
+  --mat-option-focus-state-layer-color: rgba(47, 140, 255, 0.25);
+  --mat-option-hover-state-layer-color: rgba(47, 140, 255, 0.2);
+  --mat-option-selected-state-label-text-color: #ffffff;
+}
+
+.algorithm-select__panel .mat-mdc-option.mdc-list-item--selected,
+.algorithm-select__panel .mat-mdc-option:hover {
+  background: rgba(47, 140, 255, 0.22);
+  color: #ffffff;
+}

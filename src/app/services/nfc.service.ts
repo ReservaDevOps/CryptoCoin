@@ -6,6 +6,12 @@ import { App } from '@capacitor/app';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { NFC, NDEFMessagesTransformable, NFCError } from '@exxili/capacitor-nfc';
 
+type PendingRead = {
+  resolve: (payload: string) => void;
+  reject: (reason: Error) => void;
+  timeout: ReturnType<typeof setTimeout>;
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -21,8 +27,10 @@ export class NfcService {
   private errorSubject = new BehaviorSubject<string | null>(null);
   error$ = this.errorSubject.asObservable();
 
-  private textDecoder = new TextDecoder();
   private listenersRegistered = false;
+  private pendingReads = new Set<PendingRead>();
+  private readonly textDecoder = new TextDecoder();
+  private readonly textEncoder = new TextEncoder();
 
   constructor(private platform: Platform, private ngZone: NgZone) {
     this.waitForAppReady();
@@ -67,6 +75,7 @@ export class NfcService {
       this.ngZone.run(() => {
         if (payload) {
           this.tagReadSubject.next(payload);
+          this.resolvePendingReads(payload);
         } else {
           this.errorSubject.next('Received NFC tag without readable payload.');
         }
@@ -80,18 +89,34 @@ export class NfcService {
 
     NFC.onError((error: NFCError) => {
       console.error('[NFC] Plugin error', error);
-      this.ngZone.run(() => this.errorSubject.next(error?.error ?? 'An NFC error occurred.'));
+      this.ngZone.run(() => {
+        const message = error?.error ?? 'An NFC error occurred.';
+        this.errorSubject.next(message);
+        this.rejectPendingReads(new Error(message));
+      });
     });
   }
 
   private extractPayload(data: NDEFMessagesTransformable): string | null {
     try {
       const messages = data.uint8Array().messages;
-      const firstRecord = messages?.[0]?.records?.[0];
-      if (!firstRecord) {
+      const record = messages?.[0]?.records?.[0];
+      const payload = record?.payload;
+      if (!payload || !(payload instanceof Uint8Array)) {
         return null;
       }
-      return this.textDecoder.decode(firstRecord.payload);
+
+      if ((record.type === 'T' || record.type === 'text') && payload.length > 0) {
+        const status = payload[0];
+        const langLength = status & 0x3f;
+        const textStart = 1 + langLength;
+        if (textStart > 0 && textStart <= payload.length) {
+          const textBytes = payload.slice(textStart);
+          return this.textDecoder.decode(textBytes);
+        }
+      }
+
+      return this.textDecoder.decode(payload);
     } catch (error) {
       console.error('[NFC] Error decoding payload', error);
       return null;
@@ -107,12 +132,20 @@ export class NfcService {
 
     console.info('[NFC] Initiating write');
 
+    const languageCode = 'en';
+    const langBytes = this.textEncoder.encode(languageCode);
+    const dataBytes = this.textEncoder.encode(data);
+    const payloadBytes = new Uint8Array(1 + langBytes.length + dataBytes.length);
+    payloadBytes[0] = langBytes.length & 0x3f;
+    payloadBytes.set(langBytes, 1);
+    payloadBytes.set(dataBytes, 1 + langBytes.length);
+
     try {
       await NFC.writeNDEF({
         records: [
           {
             type: 'T',
-            payload: data,
+            payload: Array.from(payloadBytes),
           },
         ],
       });
@@ -143,5 +176,60 @@ export class NfcService {
     }
 
     this.errorSubject.next(null);
+  }
+
+  async readOnce(timeoutMs = 8000): Promise<string> {
+    if (!this.isNative) {
+      throw new Error('NFC is not available on this platform.');
+    }
+
+    await this.read();
+
+    return new Promise<string>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.pendingReads.delete(entry);
+        reject(new Error('Timeout waiting for NFC tag.'));
+      }, timeoutMs);
+
+      const entry: PendingRead = {
+        resolve: payload => {
+          clearTimeout(timeout);
+          this.pendingReads.delete(entry);
+          resolve(payload);
+        },
+        reject: error => {
+          clearTimeout(timeout);
+          this.pendingReads.delete(entry);
+          reject(error);
+        },
+        timeout,
+      };
+
+      this.pendingReads.add(entry);
+    });
+  }
+
+  private resolvePendingReads(payload: string) {
+    if (this.pendingReads.size === 0) {
+      return;
+    }
+    const entries = Array.from(this.pendingReads);
+    this.pendingReads.clear();
+    entries.forEach(entry => {
+      clearTimeout(entry.timeout);
+      entry.resolve(payload);
+    });
+  }
+
+  private rejectPendingReads(error: Error) {
+    if (this.pendingReads.size === 0) {
+      return;
+    }
+    const entries = Array.from(this.pendingReads);
+    this.pendingReads.clear();
+    entries.forEach(entry => {
+      clearTimeout(entry.timeout);
+      entry.reject(error);
+    });
   }
 }

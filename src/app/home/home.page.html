@@ -1,4 +1,4 @@
-﻿<ion-content [fullscreen]="true" class="page">
+<ion-content [fullscreen]="true" class="page">
   <section class="hero">
     <img src="assets/crypto-coin-logo.png" alt="Crypto Coin" class="hero__logo" />
     <h1 class="hero__title">Crypto Coin</h1>
@@ -9,13 +9,14 @@
   <section class="main" id="content">
     <section class="tool-card">
       <h3 class="tool-card__title">Gerenciar Dados</h3>
-      <p class="tool-card__text">Informe os dados necessários para cada etapa e utilize as ações para trabalhar com sua seed phrase.</p>
+      <p class="tool-card__text">As chaves são criptografadas automaticamente assim que você informa a frase de recuperação e a senha.</p>
 
       <div class="form-group textarea-group">
         <label for="seedPhrase">Frase de Recuperação</label>
         <textarea
           id="seedPhrase"
           [(ngModel)]="seedPhrase"
+          (ngModelChange)="onSeedPhraseChange()"
           rows="3"
           placeholder="Digite aqui sua seed phrase">
         </textarea>
@@ -36,6 +37,7 @@
             id="password"
             type="password"
             [(ngModel)]="password"
+            (ngModelChange)="onPasswordChange()"
             placeholder="Informe a senha" />
           <button
             type="button"
@@ -49,6 +51,7 @@
           <textarea
             id="encrypted"
             [(ngModel)]="encryptedPayload"
+            (ngModelChange)="onEncryptedPayloadInput()"
             rows="3"
             placeholder="Resultado da criptografia ou leitura">
           </textarea>
@@ -62,10 +65,69 @@
         </div>
       </div>
 
-      <div class="tool-actions">
-        <button type="button" class="btn btn--outline" (click)="decryptPayload()">Descriptografar</button>
-        <button type="button" class="btn btn--solid" (click)="encryptSeed()">Criptografar</button>
+      <div class="encryption-controls">
+        <mat-form-field appearance="fill" class="algorithm-select">
+          <mat-label>Algoritmo</mat-label>
+          <mat-select
+            [value]="encryptionMode"
+            (selectionChange)="onAlgorithmChange($event.value)"
+            panelClass="algorithm-select__panel">
+            @for (option of encryptionOptions; track option.id) {
+              <mat-option [value]="option.id">
+                <div class="algorithm-option">
+                  <span class="algorithm-option__label">{{ option.label }}</span>
+                  <span class="algorithm-option__description">{{ option.description }}</span>
+                </div>
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <div class="compression-toggle">
+          <label for="compressionToggle">Compactação</label>
+          <ion-toggle
+            id="compressionToggle"
+            [checked]="compressionEnabled"
+            (ionChange)="onCompressionChange($event.detail.checked)">
+          </ion-toggle>
+        </div>
       </div>
+
+      <div class="variant-metrics">
+        <div class="variant-metrics__item" [class.variant-metrics__item--active]="!compressionEnabled">
+          <span class="variant-metrics__label">Sem compactação</span>
+          <span class="variant-metrics__value">{{ formatBytes(encryptionMode, false) }}</span>
+        </div>
+        <div class="variant-metrics__item" [class.variant-metrics__item--active]="compressionEnabled">
+          <span class="variant-metrics__label">Com compactação</span>
+          <span class="variant-metrics__value">{{ formatBytes(encryptionMode, true) }}</span>
+        </div>
+      </div>
+
+      @if (encryptedPreviewBytes !== null) {
+        <div class="preview-line">
+          <strong>Seleção atual:</strong>
+          <span>{{ selectedEncryptionOption?.label }}</span>
+          @if (compressionEnabled) {
+            <span>+ compactação</span>
+          }
+          <span>• {{ encryptedPreviewBytes }} bytes</span>
+        </div>
+      }
+      @if (!seedPhrase || !password) {
+        <div class="preview-line">
+          <span>Informe frase e senha para estimar o tamanho em cada opção.</span>
+        </div>
+      }
+      @if (encryptionError) {
+        <div class="error-line">{{ encryptionError }}</div>
+      }
+
+      <div class="toggle-row">
+        <label for="autoVerify">Verificar gravação automaticamente</label>
+        <ion-toggle id="autoVerify" [(ngModel)]="autoVerifyWrite"></ion-toggle>
+      </div>
+
       <div class="tool-actions">
         <button type="button" class="btn btn--outline" (click)="readFromNFC()">Ler Tag NFC</button>
         <button type="button" class="btn btn--solid" (click)="writeToNFC()">Escrever Tag NFC</button>
@@ -137,12 +199,18 @@
       <div class="modal-graphic" [class.modal-graphic--success]="showWriteSuccess">
         <ion-icon [name]="showWriteSuccess ? 'checkmark-circle-outline' : 'radio'"></ion-icon>
       </div>
-      <h2>{{ showWriteSuccess ? 'Dados gravados!' : 'Aproxime a tag NFC' }}</h2>
-      <p>
-        {{ showWriteSuccess ? 'Gravação concluída. Guarde sua tag em local seguro.' : 'Encoste a tag NFC no dispositivo e mantenha-a próxima até a gravação finalizar.' }}
-      </p>
+      <h2>
+        {{ showWriteSuccess ? 'Dados gravados!' : verificationInProgress ? 'Verificando gravação' : 'Aproxime a tag NFC' }}
+      </h2>
+      @if (verificationMessage) {
+        <p>{{ verificationMessage }}</p>
+      } @else {
+        <p>Encoste a tag NFC no dispositivo e mantenha-a próxima até a gravação finalizar.</p>
+      }
       @if (showWriteSuccess) {
         <ion-button fill="clear" size="small" (click)="closeWriteModal()">Concluir</ion-button>
+      } @else if (!verificationInProgress) {
+        <ion-button fill="clear" size="small" (click)="closeWriteModal()">Fechar</ion-button>
       }
     </div>
   </ion-modal>

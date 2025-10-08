@@ -9,6 +9,10 @@ Install dependencies with `npm install`. Use `npm run start` to launch the dev s
 ## Coding Style & Naming Conventions
 Follow the Angular style guide: components, services, and guards use PascalCase filenames with the appropriate suffix (for example `home.page.ts`, `auth.service.ts`). Indentation is two spaces and single quotes are preferred, enforced by `.editorconfig` and `.eslintrc.json`. Co-locate SCSS next to its page component and lean on Ionic utility classes. Favor named exports and reserve default exports for Angular modules only.
 
+## Encoding & Localization
+Always save source files as UTF-8 (no BOM). On Windows PowerShell, pass "-Encoding utf8" when using "Set-Content"/"Out-File" and prefer editors configured for UTF-8.
+If you edit strings with Portuguese accents or other non-ASCII text, verify with: python -c "import pathlib; pathlib.Path('file.ts').read_text(encoding='utf-8')" or search for the Unicode replacement character (U+FFFD) before committing.
+
 ## Testing Guidelines
 Place unit specs adjacent to implementation files as `*.spec.ts`. Describe suites with the feature under test, e.g. `describe('HomePage', ...)`, and keep expectations behavior-focused. Running `npm run test` executes the entire suite; add `--code-coverage` before release to ensure `karma-coverage` reports stay stable. Mock Capacitor plugins in tests so they run reliably in browser-driven environments.
 
